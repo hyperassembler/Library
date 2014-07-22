@@ -41,8 +41,9 @@ private static Map<String,String> parseJSONObject(String response)
         }
     }
 
-private static boolean deepCompareJSON(String jsonStringA,String jsonStringB) {
-        //System.out.println("Comparing: " + jsonStringA + " with" + jsonStringB);
+    //assumption for JSON array: ordered
+    //assumption for JSON object: unordered
+    private static boolean deepCompareJSON(String jsonStringA,String jsonStringB) {
         if (jsonStringA == null || jsonStringB == null) {
             return (jsonStringA == null && jsonStringB == null);
         }
@@ -54,17 +55,14 @@ private static boolean deepCompareJSON(String jsonStringA,String jsonStringB) {
                 List<String> arrayB = parseJSONArray(jsonStringB);
                 if (arrayA == null || arrayB == null)
                     return arrayA == null && arrayB == null && jsonStringA.equals(jsonStringB);
-                if (arrayA.size() != arrayB.size())
-                    return false;
-                List<String> duplicateArrayA = new ArrayList<>(arrayA);
-                duplicateArrayA.removeAll(arrayB);
-                if (duplicateArrayA.size() == 0)
+                if (arrayA.equals(arrayB))
                     return true;
-                else {
-                    Collections.sort(arrayA);
-                    Collections.sort(arrayB);
+                else
+                {
+                    //getting here probably means an array of objects and objects are not ordered
                     final int size = arrayA.size();
-                    for (int i = 0; i < size; i++) {
+                    for (int i = 0; i < size; i++)
+                    {
                         if (!deepCompareJSON(arrayA.get(i), arrayB.get(i)))
                             return false;
                     }
@@ -76,7 +74,8 @@ private static boolean deepCompareJSON(String jsonStringA,String jsonStringB) {
 
         if (jsonMapA.size() != jsonMapB.size())
             return false;
-        for (Map.Entry<String, String> eachMap : jsonMapA.entrySet()) {
+        for (Map.Entry<String, String> eachMap : jsonMapA.entrySet())
+        {
             final String jsonB = jsonMapB.get(eachMap.getKey());
             if (jsonB == null)
                 return false;
