@@ -59,6 +59,8 @@ private static Map<String,String> parseJSONObject(String response)
                     return true;
                 else
                 {
+                    if(arrayA.size() != arrayB.size())
+                        return false;
                     //getting here probably means an array of objects and objects are not ordered
                     final int size = arrayA.size();
                     for (int i = 0; i < size; i++)
